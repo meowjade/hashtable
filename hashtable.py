@@ -186,7 +186,7 @@ class HashTableSeparateChaining(HashTable):
         is overwritten.
         """
         hash: int = _hash_key(key) % self.size
-        self._data[hash].add((key, value))
+        self._data[hash].add(key, value)
 
     def getitem(self, key: str) -> dict:
         """Retrieves the value associated with key, and returns it.

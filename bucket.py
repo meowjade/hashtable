@@ -14,23 +14,13 @@ class Node:
           Return the data stored in the node.
     """
 
-    def __init__(self, data: tuple[str, dict]):
-        self._data = data
+    def __init__(self, key: str, data: dict):
+        self.key = key
+        self.data = data
         self.next: Node | None = None
 
     def __repr__(self) -> str:
-        return f"Node({self.get()})"
-
-    def get(self) -> tuple[str, dict]:
-        """Return the data stored in the node.
-
-        Arguments
-            None
-
-        Return
-            tuple[str, dict]
-        """
-        return self._data
+        return f"Node({self.key} : {self.data})"
 
 
 class Bucket:
@@ -80,7 +70,7 @@ class Bucket:
             size += 1
         return size
 
-    def get(self, key: str) -> tuple[str, dict]:
+    def get(self, key: str) -> dict:
         """gets the item with the key specified
 
         Arguments
@@ -94,15 +84,15 @@ class Bucket:
         previous: Node = None
         current = self._head
         while current is not None:
-            if current._data[0] == key:
+            if current.key == key:
                 # Set previous node to point to current's next node instead
                 previous.next = current.next
-                return current._data
+                return current.data
             previous = current
             current = current.next
         raise KeyError
 
-    def add(self, item: tuple[str, dict]) -> None:
+    def add(self, key: str, value: dict) -> None:
         """adds an entry with the specified key to the bucket, if the entry already exists, the entry is overwritten
 
         Arguments
@@ -114,16 +104,15 @@ class Bucket:
         """
         # Replace the line below with your code
 
-        key: str = item[0]
         previous: Node = None
         current = self._head
-        item_node = Node(item)
+        item_node = Node(key, value)
         # Empty bucket
         if current is None:
             self._head = item_node
             return
         while current.next is not None:
-            if current._data[0] == key:
+            if current.key == key:
                 if previous is None:
                     self._data = item_node
                 else:
@@ -150,7 +139,7 @@ class Bucket:
         previous: Node = None
         current = self._head
         while current is not None:
-            if current._data[0] == key:
+            if current.key == key:
                 # Set previous node to point to current's next node instead
                 previous.next = current.next
                 return
