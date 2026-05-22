@@ -35,7 +35,7 @@ class HashTable:
     def __init__(self, size: int):
         self.size = size
         self.length = 0
-        # Add your code here
+        self._data = [None] * size
 
     def __repr__(self) -> str:
         return f"HashTable(size={self.size})"
@@ -46,21 +46,33 @@ class HashTable:
         If the key already exists in the hash table, the existing value
         is overwritten.
         """
-        raise NotImplementedError
+        hash: int = _hash_key(key) % self.size
+        if self._data[hash] is None:
+           self.length += 1
+        self._data[hash] = value
 
     def getitem(self, key: str) -> dict:
         """Retrieves the value associated with key, and returns it.
 
         If the key does not exist, a KeyError is raised.
         """
-        raise NotImplementedError
+        hash: int = _hash_key(key) % self.size
+        value: dict = self._data[hash]
+        if value is None:
+            raise KeyError
+        return value
 
     def delitem(self, key: str) -> None:
         """Deletes the key and its associated value from the hash table.
 
         If the key does not exist, a KeyError is raised.
         """
-        raise NotImplementedError
+        hash: int = _hash_key(key) % self.size
+        value: dict = self._data[hash]
+        if value is None:
+            raise KeyError
+        self._data[hash] = None
+        self.length -= 1
 
 
 class HashTableLinearProbing(HashTable):
@@ -71,6 +83,7 @@ class HashTableLinearProbing(HashTable):
     - size: int
       The number of slots that the hash table is initialised with
     """
+    # Values are stored as a 2 element tuple (key, value)
 
     def __init__(self, size: int):
         super().__init__(size)
@@ -85,21 +98,65 @@ class HashTableLinearProbing(HashTable):
         If the key already exists in the hash table, the existing value
         is overwritten.
         """
-        raise NotImplementedError
+        hash: int = _hash_key(key) % self.size
+        safety = 0
+        current = self._data[hash]
+        while current is not None and current[0] != key:
+            hash += 1
+            hash %= self.size
+            current = self._data[hash]
+            safety += 1
+            if safety >= self.size:
+                # full hashtable, idk what to do girlll
+                break
+        
+        if self._data[hash] is None:
+           self.length += 1
+        self._data[hash] = (key, value)
 
     def getitem(self, key: str) -> dict:
         """Retrieves the value associated with key, and returns it.
 
         If the key does not exist, a KeyError is raised.
         """
-        raise NotImplementedError
+        hash: int = _hash_key(key) % self.size
+        safety = 0
+        current = self._data[hash]
+        while current is not None and current[0] != key:
+            hash += 1
+            hash %= self.size
+            current = self._data[hash]
+            safety += 1
+            if safety >= self.size:
+                # full hashtable, idk what to do girlll
+                break
+        
+        value: dict = self._table[hash]
+        if value is None:
+            raise KeyError
+        return value
 
     def delitem(self, key: str) -> None:
         """Deletes the key and its associated value from the hash table.
 
         If the key does not exist, a KeyError is raised.
         """
-        raise NotImplementedError
+        hash: int = _hash_key(key) % self.size
+        safety = 0
+        current = self._data[hash]
+        while current is not None and current[0] != key:
+            hash += 1
+            hash %= self.size
+            current = self._data[hash]
+            safety += 1
+            if safety >= self.size:
+                # full hashtable, idk what to do girlll
+                break
+        
+        value: dict = self._table[hash]
+        if value is None:
+            raise KeyError
+        self._data[hash] = None
 
 
 class HashTableSeparateChaining(HashTable):
@@ -139,3 +196,9 @@ class HashTableSeparateChaining(HashTable):
         If the key does not exist, a KeyError is raised.
         """
         raise NotImplementedError
+
+if __name__ == "__main__":
+    # this is so evil!!!!
+    table = HashTable(6767)
+    table.setitem("sb", {"a": 1})
+    print(table.getitem("sb"))
